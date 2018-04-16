@@ -20,7 +20,7 @@ RUN apt-get install -y --no-install-recommends vim less net-tools inetutils-ping
 # Required
 RUN apt-get install -y cron nginx php-fpm php-xml php-mbstring php-mysql php-mcrypt php-intl php-zip php-imap php-curl
 
-RUN wget -O - https://wordpress.org/wordpress-4.8.tar.gz | tar zx -C /var/www/html --strip-components=1
+RUN wget -O - https://wordpress.org/wordpress-4.9.5.tar.gz | tar zx -C /var/www/html --strip-components=1
 COPY wp-config.php /
 RUN chown -R www-data:www-data /var/www/html
 
