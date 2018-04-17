@@ -1,4 +1,4 @@
-WP_DB_HOST: "localhost"
+WP_DB_HOST: "127.0.0.1"
 WP_DB_NAME: "wordpress"
 WP_DB_USER: "wordpress"
 WP_DB_PASSWORD: "wordpress"
