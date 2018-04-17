@@ -24,6 +24,9 @@ RUN wget -O - https://wordpress.org/wordpress-4.9.5.tar.gz | tar zx -C /var/www/
 COPY wp-config.php /
 RUN chown -R www-data:www-data /var/www/html
 
+RUN wget -O /usr/local/bin/wp https://raw.github.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+RUN chmod +x /usr/local/bin/wp
+
 # Nginx Configuration
 COPY default /etc/nginx/sites-enabled/
 
