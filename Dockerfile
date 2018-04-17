@@ -26,6 +26,7 @@ RUN chown -R www-data:www-data /var/www/html
 
 RUN wget -O /usr/local/bin/wp https://raw.github.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 RUN chmod +x /usr/local/bin/wp
+RUN apt-get install -y mysql-client
 
 # Nginx Configuration
 COPY default /etc/nginx/sites-enabled/
