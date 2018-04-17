@@ -38,8 +38,6 @@ namespaces:
                   }else{
                       \$_SERVER['HTTPS'] = 'off';
                   }
-                  fi
-
                   define('WP_SITE_URI', (\$_SERVER["HTTPS"]?"https://":"http://").\$_SERVER["HTTP_HOST"]);
                   define('WP_CONTENT_DIR', \$_SERVER['DOCUMENT_ROOT'] . '/data');
                   define('WP_CONTENT_URL', WP_SITE_URI . '/data');
@@ -47,6 +45,7 @@ namespaces:
                   define('WP_PLUGIN_URL',  WP_SITE_URI . '/data/plugins');
                   define('UPLOADS',  'data/uploads' );
                   PHP
+                  fi
 
                   if ! $(sudo -u www-data wp core is-installed); then
                       sudo -u www-data wp core install --path=/var/www/html --url=wordpress --title=wordpress --admin_user=admin --admin_password=admin --admin_email=YOU@YOURDOMAIN.com
