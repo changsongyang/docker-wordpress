@@ -26,7 +26,7 @@ namespaces:
                 - bash
                 - -cex
                 - |
-                  mkdir -p /var/www/html/data/{themes, plugins, uploads}
+                  mkdir -p /var/www/html/data/{themes,plugins,uploads}
                   rsync -a /var/www/html/wp-content/ /var/www/html/data
                   chown -R www-data /var/www/html/data
 
