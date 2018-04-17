@@ -1,0 +1,67 @@
+---
+WP_DB_HOST: "localhost"
+WP_DB_NAME: "wordpress"
+WP_DB_USER: "wordpress"
+WP_DB_PASSWORD: "wordpress"
+---
+namespaces:
+  {{namespace}}:
+    services:
+    - name: wordress-demo
+      ports:
+      - port: 80
+      annotations:
+        nginx:
+        - http:
+          - server: wordress.{{namespace}}.*
+            paths:
+            - path: /
+      pod:
+        containers:
+        - name: wordpress
+          image: registry.rebelsoft.com/wordpress:latest
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                - bash
+                - -cex
+                - |
+                  mkdir -p /var/www/html/data/{themes, plugins, uploads}
+                  rsync -a /var/www/html/wp-content/ /var/www/html/data
+                  chown -R www-data /var/www/html/data
+
+                  if [ ! -f /var/www/html/wp-config.php ]; then
+                  sudo -u www-data wp core config --path=/var/www/html --dbhost={{WP_DB_HOST}} --dbname={{WP_DB_NAME}} --dbuser={{WP_DB_USER}} --dbpass={{WP_DB_PASSWORD}} --extra-php <<PHP
+                  if(isset(\$_SERVER['HTTP_X_FORWARDED_PROTO']) && \$_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
+                      \$_SERVER['HTTPS'] = 'on';
+                      \$_SERVER['SERVER_PORT'] = 443;
+                  }else{
+                      \$_SERVER['HTTPS'] = 'off';
+                  }
+                  fi
+
+                  define('WP_SITE_URI', (\$_SERVER["HTTPS"]?"https://":"http://").\$_SERVER["HTTP_HOST"]);
+                  define('WP_CONTENT_DIR', \$_SERVER['DOCUMENT_ROOT'] . '/data');
+                  define('WP_CONTENT_URL', WP_SITE_URI . '/data');
+                  define('WP_PLUGIN_DIR', \$_SERVER['DOCUMENT_ROOT'] . '/data/plugins');
+                  define('WP_PLUGIN_URL',  WP_SITE_URI . '/data/plugins');
+                  define('UPLOADS',  'data/uploads' );
+                  PHP
+
+                  if ! $(sudo -u www-data wp core is-installed); then
+                      sudo -u www-data wp core install --path=/var/www/html --url=wordpress --title=wordpress --admin_user=admin --admin_password=admin --admin_email=YOU@YOURDOMAIN.com
+                  fi
+        - name: mysql
+          image: registry.rebelsoft.com/mysql:latest
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                - bash
+                - -cex
+                - |
+                  mysqladmin --wait=30 ping
+                  mysql -e "CREATE DATABASE IF NOT EXISTS {{WP_DB_NAME}}"
+                  mysql -e "GRANT ALL ON {{WP_DB_NAME}}.* TO '{{WP_DB_USER}}'@'%' IDENTIFIED BY '{{WP_DB_PASSWORD}}'"
+
